@@ -3,6 +3,7 @@ import socket
 import signal
 from contextlib import contextmanager
 from time import sleep
+import sys
 
 class TimeoutException(Exception): pass
 @contextmanager
@@ -16,10 +17,15 @@ def time_limit(seconds):
 	finally:
 		signal.alarm(0)
 
+print "Welcome to my outbound port checker"
+print "You want to do back connect tcp reverse shell, right? ;)"
 
-timeout = 3 #timeout 3 second, you can modify this
+timeout = int(raw_input('Set Timeout [3]: '))
+begin_port = int(raw_input('Beginning Port [1]: '))
+end_port = int(raw_input('Beginning Port [65535]: '))
+is_stop = raw_input("Write 'y' if you want to stop search when a port is already opened: ")
 
-for num in range(1,65535):
+for num in range(begin_port,end_port):
 	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	try:
 		with time_limit(timeout):
@@ -27,8 +33,10 @@ for num in range(1,65535):
 			
 			result = sock.connect_ex(('178.33.250.62',num))
 			if result == 0:
-			   print "[+] Outbound Port " +str(num)+" is opened"
+				print "[+] Outbound Port " +str(num)+" is opened"
+				if (is_stop == "y"):
+					sys.exit()
 			else:
-			   print "[-] Outbound Port " +str(num)+ "is blocked"
+				print "[-] Outbound Port " +str(num)+ "is blocked"
 	except TimeoutException, msg:
 		print "[-] Outbound Port " +str(num)+ " is timed out" 
