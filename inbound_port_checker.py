@@ -19,8 +19,11 @@ def time_limit(seconds):
 	finally:
 		signal.alarm(0)
 
-print "Welcome to my outbound port checker"
-print "You want to do back connect tcp reverse shell, right? ;)"
+print "Welcome to my inbound port checker"
+print "You want to do back connect tcp shell, right? ;)"
+print "Or you wanna just port scan without nmap"
+
+target = raw_input('Set target IP/Host: ')
 
 try:
 	timeout = int(raw_input('Set Timeout [3]: '))
@@ -42,6 +45,7 @@ is_stop = raw_input("Write 'y' if you want to stop search when a port is already
 print "========================================="
 print "Configuration"
 print "========================================="
+print "Target: "+target
 print "Timeout: "+str(timeout)
 print "Begin Port: "+str(begin_port)
 print "Ending Port: "+str(end_port)
@@ -57,12 +61,12 @@ for num in range(begin_port,end_port):
 		with time_limit(timeout):
 			#sleep(5) #just for debug
 			
-			result = sock.connect_ex(('178.33.250.62',num))
+			result = sock.connect_ex((target,num))
 			if result == 0:
-				print "[+] Outbound Port " +str(num)+" is opened"
+				print "[+] Inbound Port " +str(num)+" is opened"
 				if (is_stop == "y"):
 					sys.exit()
 			else:
-				print "[-] Outbound Port " +str(num)+ "is blocked"
+				print "[-] Inbound Port " +str(num)+ " is closed"
 	except TimeoutException, msg:
-		print "[-] Outbound Port " +str(num)+ " is timed out" 
+		print "[-] Inbound Port " +str(num)+ " is timed out" 
